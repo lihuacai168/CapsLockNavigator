@@ -18,12 +18,13 @@ jobs:
     - name: Compile AHK to EXE
       uses: nekocodeX/GitHub-Action-Ahk2Exe@main
       with:
-        in: main.ahk  
+        in: main.ahk
+        out: caps_navigator.exe  
 
     - name: Release
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: main.exe  
+        files: caps_navigator.exe
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
