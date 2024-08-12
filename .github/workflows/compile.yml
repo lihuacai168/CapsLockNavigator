@@ -9,7 +9,6 @@ on:
       - main
   workflow_dispatch: 
 
-
 jobs:
   build:
     runs-on: windows-latest
@@ -18,17 +17,22 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Set PowerShell execution policy
+      run: |
+        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+
     - name: Set up AutoHotkey
       run: |
         Invoke-WebRequest -Uri https://www.autohotkey.com/download/ahk-v2.zip -OutFile ahk.zip
         Expand-Archive ahk.zip -DestinationPath $env:USERPROFILE\ahk
+        Write-Host "AutoHotkey installed to $env:USERPROFILE\ahk"
 
     - name: Compile AHK to EXE
       run: |
         $ahkCompiler = "$env:USERPROFILE\ahk\Ahk2Exe.exe"
-        $scriptPath = "CapsLock_Navigator.ahk"
-        $outputPath = "CapsLock_Navigator.exe"
-        & $ahkCompiler /in $scriptPath /out $outputPath
+        $scriptPath = "$(pwd)\CapsLock_Navigator.ahk"
+        $outputPath = "$(pwd)\CapsLock_Navigator.exe"
+        Start-Process -FilePath $ahkCompiler -ArgumentList "/in $scriptPath /out $outputPath" -Wait
 
     - name: Upload compiled EXE
       uses: actions/upload-artifact@v3
